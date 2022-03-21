@@ -1,0 +1,104 @@
+--FUNÇÕES DE DATA NO SQL SERVER
+
+--DATETIME - A PARTIR DE 01/01/1753 - ARMAZENA ATÉ CENTÉSIMOS DE SEGUNDOS
+--SMALLDATETIME  - A PARTIR DE 01/01/1900 - ARMAZENA ATÉ SEGUNDOS
+
+--FUNÇÕES: GETDATE, DATEPART, DATEADD, DATEDIFF
+	-- UNIDADE: YEAR, MONTH, DAY
+
+
+--GETADE()
+select getdate() as DATA;
+
+select convert(char, getdate(),103); --FORMATO DD/MM/YYYY
+
+select convert(char, getdate(),102); --FORMATO AAAA.MM.DD
+
+select convert(char, getdate(),3); --FORMATO DD/MM/YY
+
+select day(getdate()) as DIA; -- SELECIONA APENAS O DIA ATUAL
+
+select month(getdate()) as MES; -- SELECIONA APENAS O MES ATUAL
+
+select year(getdate()) as ANO; -- SELECIONA APENAS O ANO ATUAL
+
+select year('28/02/1997') as "ANO DE NASCIMENTO"; --O COMANDO DEIXA COLOCAR UMA DATA DENTRO DE PARENTESES E ME RETORNA APENAS O ANO
+--ISSO FUNCIONA TAMBEM COM DIAS E MESES, BASTA APENAS COLOCAR DENTRO DE PARENTESES E A FUNÇÃO DESEJADA.
+
+
+--DATEPART - RETORNA PARTE DE UMA DATA
+select DATEPART(YEAR, GETDATE()) AS ANO;
+
+select DATEPART(MONTH, GETDATE()) AS MES;
+
+select DATEPART(DAY, GETDATE()) AS DIA;
+
+select DATEPART(YEAR, '28/02/1997') AS ANO;
+
+
+--MESCLANDO OUTRAS FUNÇÕES COM O DATEPART
+select (DATEPART(YEAR, data_nascimento)) as ANO 
+from DBO.Alunos;
+
+select DISTINCT (DATEPART(YEAR, data_nascimento)) as ANO 
+from DBO.Alunos;
+
+select DISTINCT (DATEPART(YEAR, data_nascimento)) as ANO 
+from DBO.Alunos
+order by ANO asc
+
+select DISTINCT (DATEPART(YEAR, data_nascimento)) as ANO 
+from DBO.Alunos
+order by ANO desc
+
+
+--DATEADD : ADICIONAR ALGO A MINHA DATA
+
+-- 1- ESCOLHEMOS PRIMEIRO QUAL INFORMAÇÃO DA DATA QUE QUEREMOS ALTERAR
+-- 2- ESCOLHEMOS DEPOIS A QUE QUEREMOS FAZER, ACRESCENTAR MAIS OU MENOS, POR EXEMPLO.
+-- 3- COLOCAMOS A FUNÇÃO GETDATE PARA SABER QUE SERA ALTERADO DA DATA ATUAL
+-- OBS- VALE LEMBRAR QUE PODEMOS FAZER ESSAS ALTERAÇÕES DE QUALQUER DATA OU TABELA.
+
+select dateadd(year, -2, getdate()) AS DATA; -- SUBTRAI DOIS ANOS DA DATA ATUAL.
+
+select dateadd(year, +2, getdate()) AS DATA; -- SOMA DOIS ANOS DA DATA ATUAL.
+
+select dateadd(month, -2, getdate()) AS DATA; -- SUBTRAI DOIS MESES DA DATA ATUAL.
+
+select dateadd(month, +2, getdate()) AS DATA; -- SOMA DOIS MESES DA DATA ATUAL.
+
+select dateadd(day, -2, getdate()) AS DATA; -- SUBTRAI DOIS DIAS DA DATA ATUAL.
+
+select dateadd(day, 2, getdate()) AS DATA; -- SOMA DOIS DIAS DA DATA ATUAL.
+
+select dateadd(hour, 3, getdate()) AS DATA; -- SOMA TRES HORAS DA DATA ATUAL.
+
+select dateadd(hour, -3, getdate()) AS DATA; -- SUBTRAI TRES HORAS DA DATA ATUAL.
+
+select dateadd(year, -2, '28/02/1997') AS DATA; --SUBTRAINDO DOIS ANOS DA DATA QUE DESEJA.
+
+select dateadd(month, 2, '28/02/1997') AS DATA; --SOMA DOIS MESES DA DATA QUE DESEJA.
+
+select dateadd(day, -2, '28/02/1997') AS DATA; --SUBTRAINDO DOIS DIAS DA DATA QUE DESEJA.
+
+
+--DATEDIFF - SABER A DIFERENÇA ENTRE AS DATAS
+--"MOSTRE A DIFENREÇA DE ANOS DA DATA ATUAL COM A DATA ATUAL MAIS 2"
+select datediff(year, getdate(), dateadd(year, 2, getdate())) as "DIFENÇA DA DATA ATUAL";
+
+--DA PARA FAZER COM DATAS DESEJADAS OU DE COLUNAS QUE CONTEM DATAS
+--EXEMPLO A BAIXO PEGAMOS A DATA DE 28/02/1997 E FIZEMOS A DIFERENÇA DOS ANOS COM A DATA ATUAL
+--FOI USADO A FUNÇÃO ABS PARA POSITIVAR A O RESULTADO
+select abs (datediff(year, getdate(), '28/02/1997')) as "DIFERENÇA DE ANOS ENTRE AS DATAS";
+
+--HORAS DE VIDA
+select datediff(hour, '28/02/1997', getdate()) as "HORAS DE VIDA";
+
+--MESES DE VIDA
+select datediff(month, '28/02/1997', getdate()) as "MESES DE VIDA";
+
+--MINUTOS DE VIDA
+select datediff(minute, '28/02/1997', getdate()) as "MINUTOS DE VIDA";
+
+--SEGUNDOS DE VIDA
+select datediff(second, '28/02/1997', getdate()) as "SEGUNDOS DE VIDA"
