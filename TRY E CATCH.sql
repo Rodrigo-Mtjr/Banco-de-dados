@@ -1,0 +1,86 @@
+--TRY 
+--CATCH
+--IMPLEMENTAÇÃO DE TRATAMENTO DE ERROS NO SQL
+--------------------------------------------------------------------------------------------
+SELECT X.*
+INTO TTEMP
+FROM (
+		SELECT ROW_NUMBER() OVER(ORDER BY ID_ALUNO) LINHA,
+			   Y.ID_ALUNO
+			  ,Y.NOME
+			  ,Y.SEXO
+			  ,Y.NOME_CURSO
+			  ,Y.DATA_INICIO
+			  ,Y.DATA_TERMINO
+			  ,Y.VALOR
+		FROM(
+						SELECT A.ID_ALUNO
+							  ,A.NOME
+							  ,A.SEXO
+							  ,C.NOME_CURSO
+							  ,T.DATA_INICIO
+							  ,T.DATA_TERMINO
+							  ,AT.VALOR
+						FROM AlunosxTurmas AT
+							INNER JOIN Turmas T 
+								ON T.ID_TURMA = AT.ID_TURMA
+									INNER JOIN CURSOS C 
+									ON C.ID_CURSO = T.ID_CURSO
+										INNER JOIN ALUNOS A
+										ON A.ID_ALUNO = AT.ID_ALUNO)Y
+	)X
+
+SELECT *
+FROM TTEMP;
+--------------------------------------------------------------------------------------------
+
+--EXEMPLO 1
+--TABELA NÃO EXISTE
+
+BEGIN TRY
+	SELECT *
+	FROM TEMPTABLE;
+END TRY
+
+BEGIN CATCH
+	SELECT 
+		ERROR_NUMBER() AS "NUMERO DO ERRO",
+		ERROR_MESSAGE() AS "MENSAGEM DO ERRO";
+END CATCH;
+--------------------------------------------------------------------------------------------
+
+--EXEMPLO 2 
+--UTILIZANDO EM UMA PROCEDURE
+
+CREATE PROCEDURE PRC_EXEMPLO					--CREANDO PROCEDURE CHAMADA PRC_EXEMPLO
+AS												--ATIVANDO
+	SELECT * FROM TEMPTABLE;					--SELECIONAR A TABELA TEMPTABLE SEMPRE QUE EXECUTAR
+GO												--EXECUTAR IMEDIATAMENTE
+
+BEGIN TRY										--MOSTRE A SEGUINTE INFORMAÇÃO
+	EXECUTE PRC_EXEMPLO;						--EXECUTE A PROCEDURE 
+END TRY											--FINALIZE
+BEGIN CATCH										--MOSTRE A SEGUINTE INFORMAÇÃO
+	SELECT										--SELECIONE 
+		ERROR_NUMBER() AS "NUMERO DO ERRO",		--O NUMERO DO ERRO, CASO DER ERRO
+		ERROR_MESSAGE() AS "MENSAGEM DE ERRO";	--A MENSAGEM DE ERRO QUE VAI APARECER
+END CATCH										--FINALIZE
+--------------------------------------------------------------------------------------------
+
+--EXEMPLO 3
+--MENSAGENS COMPLETAS
+
+BEGIN
+	BEGIN TRY
+		  SELECT 1/0;
+	END TRY
+	BEGIN CATCH
+		  PRINT 'ERRO NUMERO : ' + CONVERT(VARCHAR, ERROR_NUMBER());
+		  PRINT 'ERRO MENSAGEM : ' + ERROR_MESSAGE();
+		  PRINT 'ERRO SEREVITY : ' + CONVERT(VARCHAR, ERROR_SEVERITY());
+		  PRINT 'ERRO STATE : ' + CONVERT(VARCHAR, ERROR_STATE());
+		  PRINT 'ERRO LINE : ' + CONVERT(VARCHAR, ERROR_LINE());
+		  PRINT 'ERRO PROC : ' + ERROR_PROCEDURE();
+	END CATCH;
+END
+

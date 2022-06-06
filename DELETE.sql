@@ -1,0 +1,105 @@
+--DELETE
+
+--APAGAR TODOS OS DADOS DE UMA TABELA
+--APAGAR DADOS SELECIONADOS
+------------------------------------------------------------------------------------------
+
+SELECT *
+INTO DBO.TBDELETE --CRIANDO UMA TABELA CHAMADA TBDELETE
+FROM DBO.Cursos;  --ADICIONANDO TODAS AS INFORAMAÇÕES DA TABELA CURSOS PARA ESSA NOVA TABELA
+
+DELETE 
+FROM DBO.TBDELETE; --DELETANDO TODAS AS LINHAS DA TABELA
+
+SELECT * 
+FROM TBDELETE;
+------------------------------------------------------------------------------------------
+
+--DELETAR INFORMAÇÕES ESPECIFICAS DE UMA TABELA
+
+DELETE
+FROM DBO.TBDELETE 
+WHERE nome_curso LIKE '%AVANÇADO%';
+--DELETE DA TABELA TBDELETE, TODOS OS CURSOS CUJO OS NOMES ESTIVEREM COM AVANÇADOS
+
+DELETE
+FROM DBO.TBDELETE
+WHERE nome_curso = 'VBA I';
+
+SELECT * 
+FROM TBDELETE;
+------------------------------------------------------------------------------------------
+
+SELECT *
+INTO ALUNOSTEMP
+FROM ALUNOS;
+
+--APAGAR OS ALUNOS QUE NÃO ESTÃO EM NENHUM CURSO
+--EXEMPLO 1
+SELECT *
+FROM ALUNOSTEMP;
+
+SELECT A.NOME
+	  ,A.SEXO
+	  ,T.VALOR
+FROM ALUNOSTEMP A
+		INNER JOIN AlunosxTurmas T 
+		ON T.id_aluno = A.id_aluno
+
+DELETE FROM ALUNOSTEMP
+ WHERE ID_ALUNO NOT IN
+	(
+		SELECT A.ID_ALUNO
+		  FROM ALUNOSTEMP A
+			INNER JOIN AlunosxTurmas T 
+			ON T.id_aluno = A.id_aluno
+	);
+------------------------------------------------------------------------------------------
+--EXEMPLO 2
+--EXIBIR OS ALUNOS QUE ESTÃO SEM TURMA
+SELECT A.NOME, A.SEXO
+  FROM ALUNOSTEMP A
+ WHERE A.ID_ALUNO NOT IN
+		(
+			SELECT T.ID_ALUNO 
+			  FROM AlunosxTurmas T
+	         WHERE A.ID_ALUNO = T.id_aluno
+		)
+
+DROP TABLE ALUNOSTEMP;
+
+
+SELECT *
+INTO ALUNOSTEMP
+FROM ALUNOS;
+------------------------------------------------------------------------------------------
+
+--EXEMPLO 3
+--MOSTRAR TODOS OS ALUNOS QUE TENHAM MAIS DE 30 ANOS
+SELECT A.NOME
+	  ,DATEDIFF(YEAR, DATA_NASCIMENTO, GETDATE()) AS IDADE
+	  ,A.SEXO
+FROM ALUNOSTEMP A
+WHERE DATEDIFF(YEAR, DATA_NASCIMENTO, GETDATE()) > 30
+ORDER BY A.nome
+
+--APAGAR OS REGISTROS DE 30 ANOS
+
+DELETE 
+FROM ALUNOSTEMP
+WHERE DATEDIFF(YEAR, data_nascimento, GETDATE()) > 30;
+------------------------------------------------------------------------------------------
+
+--EXEMPLO 4
+--QUERY UNIFICADA
+
+DELETE 
+FROM ALUNOSTEMP
+WHERE ID_ALUNO IN
+		(
+			SELECT id_aluno
+			FROM ALUNOSTEMP 
+			WHERE DATEDIFF(YEAR, data_nascimento, GETDATE()) > 20
+		)
+
+DROP TABLE ALUNOSTEMP;
